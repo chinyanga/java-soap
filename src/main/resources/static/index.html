@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>SOAP JavaScript Client Test</title>
+<style type="text/css">
+div {
+	padding: 10px;
+}
+
+h1 {
+	color: gray;
+}
+
+#button {
+	background-color: green;
+	color: white;
+	border-radius: 25px;
+	padding: 10px;
+}
+
+#target {
+	border-radius: 5px;
+	height: 20px;
+}
+
+#distination, #route, #distance {
+	font-weight: bold;
+	color: blue;
+}
+
+#container {
+	border: 2px solid gray;
+	border-radius: 20px;
+}
+
+.label {
+	color: gray;
+	font-weight: bold;
+}
+
+body {
+	margin: 100px;
+}
+
+#planets {
+	height: 224px;
+	overflow: auto;
+}
+</style>
+<script type="text/javascript">
+	let request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8080/rest/api/planets/getAllPlanets");
+	request.send();
+	request.onload = () => {
+		var planets = [];
+	  console.log(request);
+	  if (request.status === 200) {
+	    console.log(JSON.parse(request.response));
+	    planets = JSON.parse(request.response);
+	    var planetsDiv = document.getElementById("planets");
+	    planetsDiv.innerHTML += planets[0].originPlanetLetter.toString();
+	    for(var i=0;i<planets.length;i++) {
+
+	    	console.log(planets[i].originPlanetName + ' = ' + planets[i].originPlanetLetter );
+	          var planetDetail = '<p>' 
+	                          + planets[i].originPlanetName + ' = ' + planets[i].originPlanetLetter  + '</p>';
+	    	   planetsDiv.innerHTML += planetDetail;
+	    	}
+	  } else {
+	    alert(Error+'\t'+ request.status);
+	  }
+	};
+	
+	function getDistance() {
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('POST', 'http://localhost:8080/ws', true);
+
+		var parser = new DOMParser();
+		var distinationPlanet = document.getElementById("target").value;
+
+		// SOAP request
+		var sr = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:plan="http://www.discovery.co.za/assignment/francischinyanaga/spring/soap/api/planetDistance">'
+				+ '<soapenv:Header/>'
+				+ '<soapenv:Body>'
+				+ '<plan:DistanceRequest>'
+				+ '<plan:distinationPlanet>'
+				+ distinationPlanet.trim()
+				+ '</plan:distinationPlanet>'
+				+ '</plan:DistanceRequest>'
+				+ '</soapenv:Body>'
+				+ '</soapenv:Envelope>';
+
+		if (distinationPlanet) {
+			if (distinationPlanet.trim().length > 0) {
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == 4) {
+						if (xmlhttp.status == 200) {
+							console.log(xmlhttp.responseText);
+
+							xmlDoc = parser.parseFromString(
+									xmlhttp.responseText, "text/xml");
+
+							var distinationPlanet = xmlDoc
+									.getElementsByTagName("ns2:distinationPlanet")[0].childNodes[0].nodeValue
+									.toUpperCase();
+							/*var route = xmlDoc
+									.getElementsByTagName("ns2:Route")[0].childNodes[0].nodeValue;*/
+							var distance = xmlDoc
+									.getElementsByTagName("ns2:distance")[0].childNodes[0].nodeValue;
+							document.getElementById("distination").innerHTML = distinationPlanet;
+							//document.getElementById("route").innerHTML = route;
+							document.getElementById("distance").innerHTML = distance;
+
+						}
+					}
+
+				}
+				xmlhttp.setRequestHeader('Content-Type', 'text/xml');
+				xmlhttp.send(sr);
+			} else {
+				alert('Distination platform cant be empty');
+			}
+		} else {
+			alert('Provide a distination planet');
+		}
+	}
+</script>
+</head>
+<body>
+	<div id="container">
+		<h1>Test Soap Endpoint</h1>
+		<hr />
+		<form name="Demo" action="" method="post">
+			Distination Planet(Letter eg A): <input type="text" id="target">
+			<div>
+				<input id="button" type="button" value="Get Distance"
+					onclick="getDistance();" />
+			</div>
+
+		</form>
+		<div class="label">Distination Planet:</div>
+
+		<div id="distination"></div>
+		<div class="label">Route:</div>
+
+		<div id="route"></div>
+		<div class="label">Distance:</div>
+		<div id="distance"></div>
+		<hr />
+	</div>
+	<div>
+		<div id="planets"></div>
+	</div>
+</body>
+</html>
+<!-- typo -->

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.discovery.co.za/assignment/francischinyanaga/spring/soap/api/planetDistance"
+	xmlns:tns="http://www.discovery.co.za/assignment/francischinyanaga/spring/soap/api/planetDistance"
+	elementFormDefault="qualified">
+
+	<xsd:element name="DistanceRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="distinationPlanet" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="Acknowledgement">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="originPlanet" type="xsd:string" />
+				<xsd:element name="distinationPlanet" type="xsd:string" />
+				<xsd:element name="Route" type="xsd:string" />
+				<xsd:element name="distance" type="xsd:double" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
